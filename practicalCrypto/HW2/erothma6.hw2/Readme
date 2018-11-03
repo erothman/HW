@@ -1,0 +1,32 @@
+Written by Eric Rothman
+
+Make instructions:
+make build
+./program arguments
+
+Programs in Folder:
+encrypt-auth.go: This program receives an input of the mode, encrypt or decrypt, a 32 byte key, an input file and an output file.
+It then encrypts/decrypts the input file using AES CBC mode and HMAC-SHA-256 using the inputted key and prints it out to the output file.
+
+decrypt-attack.go: This program recieves an input file as a an argument and decrypts it using a padding attack on encrypt-auth abusing the fact that encrypt-auth responds with a different error message based on whether the padding fails or the mac fails during decryption.
+
+Answer to Part 3:
+To execute the padding attack, the attacker needs to figure out a way to differentiate between when there is an error message because the padding failed and when there is an error message because the MAC failed.
+Unfortunitely for the attacker, the program doesn't return different error messages depending on how the decryption failed.
+So the attacker needs to figure out a new way to differentiate the errors.
+
+Luckily for the attacker there is a way to do just that.
+When either MAC or the padding fails, there is a line to goto err.
+So when either error occurs, the program is sent to the same function to output the error code.
+This means that both errors cause the same amount of time to pass after the goto line is called.
+This means that there is a difference in the amount of time for an error message to be sent whether it fails at padding or at mac.
+If there was extra computations added for when padding fails, this exploit wouldn't be there.
+
+So what the attacker needs to do is to do a traditional padding attack, but using the time of how long it took for the error response to be returned to decide whether the error was for MAC or padding.
+There is a distinct problem with this of the attacker can't instantly tell what amount of time corresponds to which error blindly.
+They need to send some test messages to the server, ones of different block number that are designed to cause different errors.
+Then they can create a distribution of when it is probable that the time corresponds to a certain error message.
+
+Another way to do this was discussed in the Lucky 13 attack.
+They figured out that if the "padding" was of a certain length, they could trick TLS to take even longer than normal.
+So that is how an attacker would execute the padding attack on the TLS code given.

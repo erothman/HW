@@ -1,0 +1,179 @@
+/*a
+ * Written by Eric Rothman
+ * This program recieves the name of a text file as input with an AES encyrpted message.
+ * It calls decrypt-test to test the output of encrypt-auth on entries.
+ * It uses that information to execute a padding oracle attack on the encrypted message, decrypting all of it.
+ * It then outputs it to standard out.
+ */
+
+
+package main
+
+import (
+		"fmt"
+//		"os"
+//		"io/ioutil"
+//        "strings"
+        "crypto/rand"
+        "math/big"
+	   )
+
+func modular_exponentiation(c, d, N *big.Int) *big.Int{
+
+    result := big.NewInt(1)
+    cprime := c
+
+    for i := 0; i <= d.BitLen(); i++ {
+        if d.Bit(i) == 1 {
+            result = big.NewInt(0).Mod(big.NewInt(0).Mul(result, cprime), N)
+        }
+
+        cprime = big.NewInt(0).Mod(big.NewInt(0).Mul(cprime, cprime), N)
+    }
+
+    return result
+}
+
+func big_exp(c, d *big.Int) *big.Int{
+
+    result := big.NewInt(1)
+    cprime := c
+
+    for i := 0; i <= d.BitLen(); i++ {
+        if d.Bit(i) == 1 {
+            result = big.NewInt(0).Mul(result, cprime)
+        }
+
+        cprime = big.NewInt(0).Mul(cprime, cprime)
+    }
+
+    return result
+}
+
+func factor_power_2(n *big.Int) (int, *big.Int) {
+    r := 0
+    d := n
+    two := big.NewInt(2)
+    for new(big.Int).Mod(d, two).Cmp(big.NewInt(0)) == 0 {
+        d = new(big.Int).Div(d, two)
+        r++
+    }
+    return r, d
+}
+
+func Miller_Rabin_check_prime(n *big.Int, k int) bool {
+    r,d := factor_power_2(new(big.Int).Sub(n, big.NewInt(1)))
+    two := big.NewInt(2)
+    for i:=0; i < k; i++ {
+        flag := false
+        a, err := rand.Int(rand.Reader, new(big.Int).Sub(n, two))
+        if err != nil {
+            fmt.Println(err)
+        }
+        for a.Cmp(two) == -1 {
+            a, err = rand.Int(rand.Reader, new(big.Int).Sub(n, two))
+            if err != nil {
+                fmt.Println(err)
+            }
+        }
+        x := modular_exponentiation(a, d, n)
+        if x.Cmp(big.NewInt(1)) == 0 || x.Cmp(new(big.Int).Sub(n, big.NewInt(1))) == 0 {
+            continue
+        }
+        for j:=0; j < r-1; j++ {
+            x = modular_exponentiation(x, two, n)
+            if x.Cmp(new(big.Int).Sub(n, big.NewInt(1))) == 0 {
+                flag = true
+                j = r-1
+            }
+        }
+        if !flag {
+            return false
+        }
+    }
+    return true
+}
+
+func generate_primes() (*big.Int, *big.Int) {
+    one := big.NewInt(1)
+    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(1024)), one)
+    q, err := rand.Int(rand.Reader, upper_bound)
+    if err != nil {
+        fmt.Println(err)
+    }
+    for q.Cmp(big.NewInt(2048)) < 0 || !Miller_Rabin_check_prime(q, 4) {
+        q2, err := rand.Int(rand.Reader, upper_bound)
+        q = q2
+        if err != nil {
+            fmt.Println(err)
+        }
+    }
+    i := int64(2)
+    p := new(big.Int).Add(big.NewInt(0).Mul(q, big.NewInt(i)), one)
+    for !Miller_Rabin_check_prime(p, 4) && i < 4096 {
+        i++
+        p2 := new(big.Int).Add(new(big.Int).Mul(q, big.NewInt(i)), one)
+        p = p2
+    }
+
+    if i > 4096 {
+        return generate_primes()
+    }
+    return p, q
+}
+
+func get_generator(p *big.Int, q *big.Int) *big.Int {
+    group_size := new(big.Int).Sub(p, big.NewInt(1))
+    j := new(big.Int).Div(group_size, q)
+    i := big.NewInt(3)
+    for group_size.Cmp(i) > 0 {
+        g := modular_exponentiation(i, j, p)
+        if g.Cmp(big.NewInt(1)) != 0 {
+            return g
+        }
+        i = new(big.Int).Add(i, big.NewInt(1))
+    }
+    fmt.Println("ERROR")
+    return group_size
+}
+
+func gen_a(p *big.Int) *big.Int {
+    a, err := rand.Int(rand.Reader, big.NewInt(0).Sub(p, big.NewInt(1)))
+    if err != nil {
+        fmt.Println(err)
+    }
+    return a
+}
+
+func write_Bob_output(filename string, p, g, ga *big.Int) {
+
+//printOutput()
+}
+
+func write_secret_output(filename string, p, g, a *big.Int) {
+
+}
+
+/*
+ *This is the control function. Calls the other functions.
+ */
+func main() {
+
+    args := os.Args[1:]
+    if (len(args) != 2) {
+        fmt.Println("Wrong Arguments: There need to be two command line arguments.")
+        fmt.Println("The first one is the key for the encryption that must consist of all uppercase letters.")
+        fmt.Println("The second argument is the file name for encryption or decrpytion.")
+        os.Exit(1)
+    }
+
+    bobFileName := args[0]
+    secretFileName := args[1]
+
+    p, q := generate_primes()
+    g := get_generator(p, q)
+    a := gen_a(p)
+    ga := modular_exponentiation(g, a, p)
+    write_Bob_output(bobFileName, p, g, ga)
+    write_secret_output(secretFileName, p, g, a)
+}

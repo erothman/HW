@@ -1,0 +1,28 @@
+Written by Eric Rothman
+
+Make instructions:
+make build
+./program arguments
+
+Programs in Folder:
+vigenere-encrypt.go: takes in a key in all capital letters and the name of a file with text in it and prints out the text encrypted using the vigenere cipher and the key.
+
+vigenere-decrypt.go: takes in a key in all capital letters and the name of a file with encrypted text in it and prints out the decrypted text using the vigenere cipher and the key.
+
+vigenere-analyze.go: takes in the name of a file with encrypted text in it and prints out a good guess for the length of the key and what the key used to encrypt the text is.
+
+
+Answer to Part 4:
+
+If the key is atleast as long as the message than the key is never repeated.
+Since the key is never repeated it removes the consistant repetition of letters in the key for encrypting.
+To ensure the security though it would be best for the key to atleast look random, making sure that the key doesn't actually consist of repeats.
+If both of these things are ensured than there is no consistant repetition in the key so the index of coincidence attack will fail.
+When the key looks random and is the length of the message than it is impossible to work backwards from the ciphertext to find the plaintext without the key.
+Because when both those conditions are fulfilled any plaintext could be combined with a key to create the ciphertext.
+So every possible plain text is equally likely to produce the cipher text.
+
+This fails if the key is used for multiple messages then. If that is the case than it is possible to use frequency analysis to figure out the message.
+The code is completely secure as long as the key is never repeated in any circumstance, including other messages.
+
+So as long as the key is atleast the length of the message, looks random without there being consistant repetition throughout the key, and is only used once, the message is unbreakable.
