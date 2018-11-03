@@ -11,8 +11,9 @@ package main
 
 import (
 		"fmt"
-//		"os"
-//		"io/ioutil"
+		"os"
+        "strings"
+		"io/ioutil"
 //        "strings"
         "crypto/rand"
         "math/big"
@@ -147,10 +148,47 @@ func gen_a(p *big.Int) *big.Int {
 
 func write_Bob_output(filename string, p, g, ga *big.Int) {
 
-//printOutput()
+    pstring := p.String()
+    gstring := g.String()
+    gastring := ga.String()
+
+    var strBuilder strings.Builder
+    strBuilder.WriteString("(")
+    strBuilder.WriteString(pstring)
+    strBuilder.WriteString(",")
+    strBuilder.WriteString(gstring)
+    strBuilder.WriteString(",")
+    strBuilder.WriteString(gastring)
+    strBuilder.WriteString("}")
+
+//    output := "(" + pstring + "," + gstring + "," + gastring + ")"
+
+    err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
+    if err != nil {
+        fmt.Println(err)
+    }
 }
 
 func write_secret_output(filename string, p, g, a *big.Int) {
+    pstring := p.String()
+    gstring := g.String()
+    astring := a.String()
+
+    var strBuilder strings.Builder
+    strBuilder.WriteString("(")
+    strBuilder.WriteString(pstring)
+    strBuilder.WriteString(",")
+    strBuilder.WriteString(gstring)
+    strBuilder.WriteString(",")
+    strBuilder.WriteString(astring)
+    strBuilder.WriteString("}")
+
+//    output := "(" + pstring + "," + gstring + "," + gastring + ")"
+
+    err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
+    if err != nil {
+        fmt.Println(err)
+    }
 
 }
 
