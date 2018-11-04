@@ -1,0 +1,288 @@
+\documentclass[letterpaper, 11pt]{article}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{times}
+\usepackage{listings}
+\usepackage {tikz}
+\usetikzlibrary {positioning}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{graphicx}
+\usepackage[pdf]{graphviz}
+
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{figur}[lemma]{Figure}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{definition}[lemma]{Definition}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{example}[lemma]{Example}
+\newtheorem{exercise}[lemma]{Exercise}
+\newtheorem{remark}[lemma]{Remark}
+\newtheorem{fig}[lemma]{Figure}
+\newtheorem{tab}[lemma]{Table}
+\newtheorem{fact}[lemma]{Fact}
+\newtheorem{test}{Lemma}
+\newtheorem{algorithm}[lemma]{Algorithm}
+
+\begin{document}
+
+
+
+\title{Homework \#4 \\ Automata and Computation Theory \\Fall 2018}
+\author{Written by Eric Rothman}
+
+\maketitle
+
+\section*{Problem 1}
+Prove the following languages are not regular:
+\subsection*{a}
+$A = \left\{ 0 ^ { n } 1 ^ { m } 0 ^ { n + m } | m , n \geq 0 \right\}$\\
+
+Proof:\\
+
+FSOC assume $A$ is regular.
+Then $\exists$ a number $p$ such that the pumping lemma holds.
+
+Let $S = 0^p1^p0^{2p}$.
+This string has the length of $4p > p$, so the pumping lemma holds here.
+
+So $S = xyz$.
+
+Since $|xy| \leq p$ and the first $p$ values of $S$ are all $0$, $y$ contains only $0$'s.
+
+So WLOG lets say $y$ is of length $b > 0$, by the second condition.
+
+So $y$ is a string of $b 0$'s.
+
+Now lets look at $xy^2z$.\\
+
+$xy^2z$ would be a string of the structure $0^{p+b}1^p0^{2p}$.
+
+Since $b > 0$, $2p \neq p+b+p = 2p+b$.
+
+So the sum of the lengths of the first two segmants, the first $0$ segmant and the $1$ segmant, is not equal to the length of the third segmant.
+
+Since $xy^2z$ is not of the form $0^n1^m0^{n+m}$, $xy^2z \notin A$.
+
+This is a contradiction with the pumping lemma.
+
+Since there is a contradiction, the assumption must be false.
+
+So $A$ is not regular.
+
+\subsection*{b}
+$B = \{ w | w \in \{ 0,1 \} ^ { * } \text { is not a palindrome } \}$
+
+Proof:\\
+
+FSOC let $B$ be regular
+
+Since $B$ is a regular language and the set of regular languages is closed under complement, $\overline{B}$ is a regular language.
+
+Since $\overline{B}$ is a regular language, $\{ w | w \in \{ 0,1 \} ^ { * } \text { is a palindrome } \}$ is a regular language.
+
+This contradicts what we proved in class.\\
+
+To cover my bases though, I will prove again that $\overline{B} = \{ w | w \in \{ 0,1 \} ^ { * } \text { is a palindrome } \}$ is not a regular language.
+
+FSOC let let $\overline{B}$ be a regular language.
+So $\exists p$ such that the pumping lemma holds.\\
+
+Let $S = 0^p10^p$, $S \in \overline{B}$ $|S| = 2p + 1 > p$.
+
+So $S = xyz$, since $|xy| \leq p$, $y = o^t$ for some $t > 0$.
+
+So $xy^2z = 0^{p + t}10^p \notin \overline{B}$
+
+That contradicts with the pumping lemma, so $\overline{B}$ is not regular.\\
+
+Since there is a contradiction, the assumption must be false.
+
+So $B$ is not a regular language.
+
+\newpage
+\section*{Problem 2}
+\subsection*{a}
+Let $B = \left\{ 1 ^ { k } y | y \in \{ 0,1 \} ^ { * } \text { and } y \text { contains at least } k \text { 1s, for any } k \geq 1\right\}$. Is $B$ a regular language? Prove your answer.\\
+
+$B$ is not a regular language.
+
+Proof:\\
+
+FSOC let $B$ be a regular language.
+Than $\exists p$ such that the pumping lemma hold.
+
+Let $S = 1^p01^p$. 
+
+Since $p \geq 1$, and $y = 01^p$ contains at least $p$ ones, $S \in B$.
+
+$|S| = 2p + 1 > p$, so the pumping lemma holds for $S$.
+
+So $S = xyz$.
+
+Since $|xy| \leq p$ by the third condition, and the first $p$ spots in $S$ are $1$, and $y > 1$ by the first condition $y = 1^t$ where $t \geq 1$.
+
+Now examine $S_2 = xy^2z$.\\
+
+$S_2$ is of the form $1^{p+t}01^{p}$ since $xy$ is within the first subset of $1$'s.
+ 
+Since $S_2$ is of that form, it can be divided into two sections, $1^k$ where $k = p+t \geq 1$ and $y' = 01^{p}$.
+
+The number of $1$'s in $y'$ is $p < (p+t)$ since $t > 1$.
+
+So since $y'$ does not have at least $(p+t) 1$'s in it, $S_2 \notin B$.
+
+This contradicts the pumping lemma, so the assumption must be false.
+
+So $B$ is not a regular language.
+
+\subsection*{b}
+Let $C = \left\{ 1 ^ { k } y | y \in \{ 0,1 \} ^ { * } \text { and } y \text { contains at most } k \text { 1s, for any } k \geq 1\right\}$. Is $C$ a regular language? Prove your answer.\\
+
+$C$ is not a regular language.
+
+Proof:\\
+
+FSOC let $C$ be a regular language
+So $\exists p$ such that the pumping lemma holds.
+
+Let $S = 1^p01^p$
+
+Since $p \geq 1$, and $y = 01^p$ contains at most $p$ ones, $S \in B$.
+
+$|S| = 2p + 1 > p$, so the pumping lemma holds for $S$.
+
+o $S = xyz$.
+
+Since $|xy| \leq p$ by the third condition, and the first $p$ spots in $S$ are $1$, and $y > 1$ by the first condition $y = 1^t$ where $t \geq 1$  and $t \leq p$.
+
+Now examine $S_2 = xy^0z$.\\
+
+$S_2$ is of the form $1^{p-t}01^{p}$ since $xy$ is within the first subset of $1$'s.
+ 
+Since $S_2$ is of that form, it can be divided into two sections, $1^k$ where $k = p-t \geq 0$ and $y' = 01^{p}$.
+
+The number of $1$'s in $y'$ is $p > (p-t)$ since $t > 1$.
+
+So since $y'$ has more than $(p-t) 1$'s in it, $S_2 \notin C$.
+
+This contradicts the pumping lemma, so the assumption must be false.
+
+So $C$ is not a regular language.
+
+\newpage
+\section*{Problem 3}
+Consider the language $F = \left\{ a ^ { i } b ^ { j } c ^ { k } | i , j , k \geq 0 \text { and if } i = 1 \text { then } j = k \right\}$, where $\Sigma = \{ a , b , c \}$ .
+\subsection*{a}
+Show that $F$ is not regular.\\
+
+As proven in HW 2, regular languages are closed under reverse, so if and only if $F$ is regular, $F^R = \left\{ c ^ { k } b ^ { j } a ^ { i } | i , j , k \geq 0 \text { and if } i = 1 \text { then } j = k \right\}$ must also be regular.
+
+Now I'll prove $F^R$ is not regular.
+
+FSOC let assume $F^R$ is regular, so $\exists p$ such that the pumping lemma holds.
+
+let $S = c^pb^pa$. Since $i = 1$ and $j = p$ and $k = p$, so $j = k$, $S \in F^R$.
+
+So $S = xyz$.
+
+Since $|xy| < p$ by the third condition and the first $p$ values of $S$ is $c$, $y = c^t$ where $t \geq 1$ by the second condition.
+
+Lets look at $S_2 = xy^2z$\\
+
+$S_2$ is of the form $c^{p+t}b^pa$.
+
+Since $t > 1$, $p+t > p$, so $p+t \neq p$.
+
+Since in $S_2$, $i = 1$, and $j \neq k$, $S_2 \notin F^R$.
+
+This contradicts the pumping lemma, so the assumption must be false.
+
+So $F^R$ is not regular.
+
+Since $F^R$ is not regular and the set of regular languages is closed under reverse, $(F^R)^R = F$ is not regular.
+
+So $F$ is not regular.
+\subsection*{b}
+Show that $F$ acts like a regular language in the pumping lemma.
+
+Let the pumping length $p = 2$.
+
+For all $S \in F$ such that length of $S \geq p$, there are four cases.
+\subsubsection*{Case 1}
+$i = 0$.
+
+So $a \notin S$ at any spot.
+So $a \notin y$ at any spot of the subset.
+So no matter the value of $k \geq 1$, there are $0$ occurances of a in $xy^kz$.
+Since $i = 0$ for every value of $k$, $xy^kz \in F$ always.
+
+NOTE: If $j = 1$, then $y$ could be $b$ or $c$, and no matter what the power it is raised to, the string will still be of the form $b^xc^z$ where $x,z \geq 0$.
+If $j \neq 1$ and $i = 0$, then no matter the $y$, as long as it matches the conditions of $|y| > 0$ and $|xy| \leq 2$ it will be in $F$ since no matter the $k$, $y$ will either contain only $b$'s or $c$'s, but never a mix. 
+
+There will always be a $b$ or $c$ to choose to be $F$ since the length of $S$ is greater or equal to 2 and there are 0 a's in $S$.
+\subsubsection*{Case 2}
+$i = 1$
+
+Then let $y = a$ which is the first spot in the string.
+$|y| > 1$ since it is not the empty string, and $|xy| \leq 2$ since $|x| = 0$ and $|y| = 1$.
+So $|xy| = 1 < 2$.
+Since $S \in F$, and $i = 1$ $z = b^nc^n$ where $n \geq 0$.
+
+if $k = 1$, then $a \neq 1$ and $xy^kz = x^iy^jz^k$ where $i,j,k \geq 0$, so $xy^kz \in F$
+
+if $k = 1$, then we have $xyz$ which is assumed to be in $F$.
+
+So no matter the value of $k \geq 0$, $xy^kz \in F$.
+\subsubsection*{Case 3}
+$i = 2$
+
+Let $y = aa$, which is the first two spots in $S$ and the only $a$'s in $S$.
+$|y| = 2 > 1$, $|xy| = 2 \leq 2$ since $|x| = 0$ and $y = aa$.
+
+Since $y$ is the first two spots in $S$ and the only $a$'s in $S$, no matter what $k \geq 0$ is $y^k \neq a$.
+So no matter the value of $k$, $i \neq 1$.
+
+Since $i \neq 1$, and $xy^kz = a^ib^jc^k$ where $i, j, k \geq 0$, $xy^kz \in F$
+\subsubsection*{Case 4}
+$i > 2$
+
+Let $y = a$, which is the first spot in $S$ and the first of more than 2 a's.
+
+$|y| = 1$, and $|xy| = 1 < 2$ since $|x| = 0$ and $y = a$.
+
+Then if $k = 0$, $i \geq 2$ since $i \geq 2$ when $k = 1$ and since $|y| = 1$.
+
+If $k > 0$, $i > 2$ because the number of $a$'s is not getting smaller.
+
+So no matter the value of $k$, $i > 1$, so $i \neq 1$.
+
+So $xy^kz = a^ib^jc^k$ where $i, j, k \geq 0$ and $i \neq 1$, so $xy^kz \in F$ since it is of the proper form and matches the condition of the statement.\\\\
+
+So no matter the case, $\forall S \in F$ such that $|S| \geq 2$, all three conditions are met.
+
+So $F$ acts like the pumping lemma.
+\subsection*{c}
+Explain why parts (a) and (b) do not contradict the pumping lemma.\\
+
+They do not contradict the pumping lemma because the pumping lemma is defined only one way.
+
+It is defined as if $A$ then $B$.
+
+But since $A$, that $F$ is a regular language, is not fulfiled as of part a, the lemma makes no assumptions about whether or not b is true.
+
+So despite the fact that $A$ is false and $B$ is true, that does not violate the binary logic of the if then statements.
+
+If the pumping lemma was if and only if, then parts (a) and (b) would violate the pumping lemma, but that is not defined as such.
+\newpage
+\section*{Problem 4}
+Give a context-free grammar that generates the following language, where the alphabet $\Sigma$ is $\{ 0,1 \} : \{ w | w \mathrm { ~ i s ~ n o t ~ e m p t y ~ a n d ~ s t a r t s ~ a n d ~ e n d s ~ w i t h ~ t h e ~ s a m e ~ s y m b o l \} . ~ }$\\\\
+$G$:
+
+$S --> 0A0 | 1A1 | 0 | 1$
+
+$A --> 0A | 1A | \epsilon$ 
+
+NOTE: start variable is $S$.
+\newpage
+\end{document}

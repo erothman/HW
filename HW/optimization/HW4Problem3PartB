@@ -1,0 +1,26 @@
+C = [1,7,-37,94,-9,76,-146]
+b = [26;18;34]
+A = [7,7,45,-1,3,-53,-68;9,-5,27,-115,7,-129,42;5,-3,63,-96,10,-109,86]
+rightSide = [0;b]
+leftSide = [1;0;0;0]
+middle = [-C; A]
+Tableau = [leftSide,middle,rightSide]
+
+fprintf("This is the pretableau\n")
+fprintf("The starting Basis we will work with is columns 1,2,7\n")
+format short
+Tableau(2,:) = Tableau(2,:)/(Tableau(2,2))
+Tableau(1,:) = Tableau(1,:)-(Tableau(2,:)*Tableau(1,2))
+Tableau(3,:) = Tableau(3,:)-(Tableau(2,:)*Tableau(3,2))
+Tableau(4,:) = Tableau(4,:)-(Tableau(2,:)*Tableau(4,2))
+fprintf("Reduce the first column to rref\n")
+Tableau(3,:) = Tableau(3,:)/(Tableau(3,3))
+Tableau(1,:) = Tableau(1,:)-(Tableau(3,:)*Tableau(1,3))
+Tableau(2,:) = Tableau(2,:)-(Tableau(3,:)*Tableau(2,3))
+Tableau(4,:) = Tableau(4,:)-(Tableau(3,:)*Tableau(4,3))
+fprintf("Reduce the 2nd column to rref\n")
+Tableau(4,:) = Tableau(4,:)/(Tableau(4,8))
+Tableau(1,:) = Tableau(1,:)-(Tableau(4,:)*Tableau(1,8))
+Tableau(3,:) = Tableau(3,:)-(Tableau(4,:)*Tableau(3,8))
+Tableau(2,:) = Tableau(2,:)-(Tableau(4,:)*Tableau(2,8))
+fprintf("Reduce the 7th column to rref\n")

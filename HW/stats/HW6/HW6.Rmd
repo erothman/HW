@@ -1,0 +1,57 @@
+---
+title: "HW6"
+author: "Eric Rothman"
+date: "March 29, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+mle <- vector("numeric", 10000)
+momx <- vector("numeric", 10000)
+momy <- vector("numeric", 10000)
+for (i in 1:10000) {
+y<-vector("numeric",10)
+together<-vector("numeric",10)
+x<-runif(10, -1, 1)
+for (j in 1:10){
+y[j] = runif(1,-sqrt(1-(x[j])^2),sqrt(1-(x[j])^2))
+together[j] <- x[j]^2 + y[j]^2
+}
+maximum <- max(together)
+mle[i] <- sqrt(maximum)
+momx[i] <- 2*sqrt(1/10 * sum(x^2))
+momy[i] <- 2*sqrt(1/10 * sum(y^2))
+}
+biasMle <- mean(mle) - 1
+biasMomx <- mean(momx) - 1
+biasMomy <- mean(momy) - 1
+varMle <- var(mle)
+varMomx <- var(momx)
+varMomy <- var(momy)
+stdErrMomx <- sqrt(varMomx)
+stdErrMomy <- sqrt(varMomy)
+MSEMLE <- varMle + biasMle^2
+MSEMomx <- varMomx + biasMomx^2
+MSEMomy <- varMomy + biasMomy^2
+correlxy <- cor(momx,momy)
+cover <- correlxy * stdErrMomx * stdErrMomy
+avgVar <- 0.25*(varMomx + varMomy + 2*cover)
+
+print(paste("The bias of the Mle estimator is", biasMle))
+print(paste("The variance of the Mle estimator is", varMle))
+print(paste("So the Mean Squared Error for the Mle estimator is"), MSEMLE)
+print(paste("The bias of the MOM estimator using x values is", biasMomx))
+print(paste("The variance of the MOM estimator using x values is", varMomx))
+print(paste("So the Mean Squared Error for the MOM estimator using x values is"), MSEMomx)
+print(paste("The bias of the MOM estimator using y values is", biasMomy))
+print(paste("The variance of the MOM estimator using y values is", varMomy))
+print(paste("So the Mean Squared Error for the MOM estimator using y values is"), MSEMomy)
+print(paste("The correlation coefficent between the two MOM estimators is", correlxy))
+print(paste("Using this, the variance of the two MOM estimators averaged together is", avgVar))
+print(paste("This means there is an improvement of", varMomx-avgVar, "between the variance of the x MOM estimator and the average of the estimators"))
+
+```

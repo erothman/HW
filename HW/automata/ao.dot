@@ -1,0 +1,2 @@
+digraph ao {rankdir=LR;
+a [label="Ä"]; o [label=<Ö>]; a->o;}

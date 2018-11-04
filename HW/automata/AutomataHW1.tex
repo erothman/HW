@@ -1,0 +1,267 @@
+\documentclass[letterpaper, 11pt]{article}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{times}
+\usepackage{listings}
+\usepackage {tikz}
+\usetikzlibrary {positioning}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{graphicx}
+
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{figur}[lemma]{Figure}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{definition}[lemma]{Definition}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{example}[lemma]{Example}
+\newtheorem{exercise}[lemma]{Exercise}
+\newtheorem{remark}[lemma]{Remark}
+\newtheorem{fig}[lemma]{Figure}
+\newtheorem{tab}[lemma]{Table}
+\newtheorem{fact}[lemma]{Fact}
+\newtheorem{test}{Lemma}
+\newtheorem{algorithm}[lemma]{Algorithm}
+
+\begin{document}
+
+
+
+\title{Homework \#1 \\ Automata and Computation Theory \\Fall 2018}
+\author{Written by Eric Rothman}
+
+\maketitle
+
+\section{Problem 1}
+Show that for any three sets $A$, $B$, $C$, we have that\\
+
+$(A \cap B) \cup C = (A \cup C) \cap (B \cup C)$.\\\\
+PROOF: There are two parts to the proof.
+\subsection*{Part 1}
+Prove $(A \cap B) \cup C \subset (A \cup C) \cap (B \cup C)$
+
+Let $a \in (A \cap B) \cup C$
+
+So $a \in (A \cap B)$ or $a \in C$
+
+Case 1: $a \in (A \cap B)$
+
+$\quad$ So $a \in A$ and $a \in B$
+
+$\quad$ Since $a \in A$, $a \in (A \cup C)$
+
+$\quad$ and since $a \in B$, $a \in (B \cup C)$
+
+$\quad$ Since $a \in (B \cup C)$ and $a \in (A \cup C)$, $a \in (A \cup C) \cap (B \cup C)$
+
+Case 2: $a \in C$
+
+$\quad$ So $a \in (A \cup C)$ and $a \in (B \cup C)$
+
+$\quad$ So $a \in (A \cup C) \cap (B \cup C)$
+
+So in either case if $a \in (A \cap B) \cup C$, then $a \in (A \cup C) \cap (B \cup C)$
+
+So $(A \cap B) \cup C \subset (A \cup C) \cap (B \cup C)$
+
+\subsection*{Part 2}
+Prove $(A \cup C) \cap (B \cup C) \subset (A \cap B) \cup C$
+
+Let $b \in (A \cup C) \cap (B \cup C)$
+
+So $b \in (A \cup C)$ and $b \in (B \cup C)$.
+
+There are two cases
+
+Case 1: WLOG let $b \in C$
+
+$\quad$ Then $b \in (A \cap B) \cup C$ because $b \in C$.
+
+Case 2: $b \in A$ and $b \in B$
+
+$\quad$ Then $b \in (A \cap B)$
+
+$\quad$ So $b \in (A \cap B) \cup C$
+
+So in either case if $b \in (A \cup C) \cap (B \cup C)$, then $b \in (A \cap B) \cup C$
+
+So $(a \cup C) \cap (B \cup C) \subset (A \cap B) \cup C$.
+
+Since $(A \cup C) \cap (B \cup C) \subset (A \cap B) \cup C$ and $(A \cap B) \cup C \subset (A \cup C) \cap (B \cup C)$,
+
+ $(A \cap B) \cup C = (A \cup C) \cap (B \cup C)$
+ 
+\newpage
+
+\section{Problem 2}
+ In the textbook it is shown that $\sqrt{2}$ is an irrational number. Use this fact to show that
+the following statement is true: there exist two irrational numbers $p$ and $q$, such that $q^{p}$ is a rational number.\\\\
+ANSWER:\\\\
+We know that $\sqrt{2}$ is an irrational number.
+
+Lets look at $\sqrt{2}^{\sqrt{2}}$
+
+There are two cases, $\sqrt{2}^{\sqrt{2}}$ is rational and it is irrational
+
+\subsection*{Case 1: Rational}
+If $\sqrt{2}^{\sqrt{2}}$ is a rational number then the proof ends there since $\sqrt{2}$ is an irrational number.
+
+So there exists $p$ and $q$ in the irrational numbers such that $q^{p}$ is a rational number.
+
+\subsection*{Case 2: Irrational}
+
+Let $\sqrt{2}^{\sqrt{2}}$ be irrational.
+
+then let $p = \sqrt{2}^{\sqrt{2}}$ and let $q = \sqrt{2}$.
+
+So we have $(\sqrt{2}^{\sqrt{2}})^{\sqrt{2}}$
+
+By properties of exponential, this equals $\sqrt{2}^{\sqrt{2}*\sqrt{2}} = \sqrt{2}^{2} = 2$
+
+$2$ is an integer and as such is a rational number.
+
+Since 2 is a rational number, $\exists 2$ irrational numbers $p$ and $q$ such that $q^{p}$ is a rational number.
+\newpage
+
+\section{Problem 3}
+Show that every undirected graph with 2 or more nodes contains two nodes with the same
+degree.\\\\
+PROOF:\\
+Lets construct an arbitrary undirected graph with $n \geq 2$ nodes.
+
+Lets also contruct it so that it maximizes the number of nodes with unique degrees.
+
+Finally let $D$ be the set of all possible degrees and $V$ be the set of all $n$ nodes.
+
+There are two options of how to construct the graph based on whether or not the graph is connected.
+
+\subsection*{Case 1: Graph is disconnected}
+Since the graph is disconnected, $\exists$ a node $v$ with a degree of $0$.
+
+Since $v$ has a degree of $0$, there are no edges connecting $v$ to any other node.
+
+So it is impossible for a node to have a degree of $n-1$ since that requires that node having an edge connecting it to every other node including $v$.
+
+So the maximum degree a node can have is $n-2$ which occurs when that node has an edge connecting it to every other node except $v$.
+
+So $D = \{x | x \in \mathbb{Z}$ and $0 \leq x \leq n-2\}$
+
+So $|D| = n-1$.
+
+Since $|D| = n-1$ and $|V| = n$ and $n > n-1$, $|V| > |D|$
+
+Since $|V| > |D|$, by the pigeon-hole principal there is no function from set $V$ to set $D$ that is one-to-one.
+
+Since there is no function that is one-to-one, any function from $V$ to $D$, such as putting degree counts to nodes, will always have atleast $2$ elements in $V$ that map to the same element in $D$
+
+So for any arbitrary disconnected graph with nodes $n \geq 2$, there will always be atleast $2$ nodes that share a degree.
+
+\subsection*{Case 2: The graph is connected}
+Since the graph is connected, every node has atleast one edge connecting it to another node.
+
+So the minimum degree a node can have is $1$.
+
+The maximum degree a node can have is $n-1$ which is when it has an edge connecting it with every other node in the graph.
+
+So $D = \{x | x \in \mathbb{Z}$ and $1 \leq x \leq n-1\}$
+
+So $|D| = n-1$.
+
+Since $|D| = n-1$ and $|V| = n$ and $n > n-1$, $|V| > |D|$
+
+Since $|V| > |D|$, by the pigeon-hole principal there is no function from set $V$ to set $D$ that is one-to-one.
+
+Since there is no function that is one-to-one, any function from $V$ to $D$, such as putting degree counts to nodes, will always have atleast $2$ elements in $V$ that map to the same element in $D$
+
+So for any arbitrary connected graph with nodes $n \geq 2$, there will always be atleast $2$ nodes that share a degree.
+
+Since in any connected or in any disconnected undirected graph with $n \geq 2$ nodes there will always be atleast $2$ nodes that share a degree it holds true that:
+
+Any undirected graph with $2$ or more nodes contains two nodes with the same degree.
+\newpage
+\section{Problem 4}
+Show that there exist no integers $x$, $y$, $z$ such that $x^2 + y^2 = 3z^2$, except $x = y = z = 0$.\\\\
+PROOF:\\
+NOTE: Since $\forall a \in \mathbb{Z}$ $a^2 = (-a)^2$, if $a,b,c \in \mathbb{Z}$ is a solution to $x^2 + y^2 = 3z^2$, then $a, b, -c$ is a solution and so is any version of $-1$ times one or multiple of the answers.
+
+So WLOG lets look at the solution $a, b, c$ in which $a, b, c > 0$.
+
+FSOC lets say $\exists x, y, z$ such that $x, y, z \in \mathbb{Z}$, $x^2 + y^2 = 3z^2$, $x,y,z > 0$, and $z$ is the smallest possible positive value that satisfies the equation on the right hand side.
+
+Since $z$ is an integer, $z^2$ is an integer.
+
+Since $x^2 + y^2 = 3z^2$, $z^2 = \dfrac{x^2 + y^2}{3}$
+
+Since $z^2$ is an integer and $z^2 = \dfrac{x^2 + y^2}{3}$, $x^2 + y^2$ must be divisible by $3$.
+
+Since $x^2 + y^2$ is the sum of squares of two integers and is divisible by $3$, $x, y$ must both be divisible by $3$.
+
+Since $x$ and $y$ are both divisible by $3$, $x^2$ and $y^2$ are both divisible by $9$.
+
+So $x^2 + y^2 = 3z^2$ is the same as $9(x')^2 + 9(y')^2 = 3z^2$ where $x = 3x'$, $y = 3y'$ and $x', y' \in \mathbb{Z}$
+
+So $(x')^2 + (y')^2 = \dfrac{3z^2}{9}$
+
+So $(x')^2 + (y')^2 = \dfrac{z^2}{3}$.
+
+Since $x'$ and $y'$ are integers, so are $(x')^2$ and $(y')^2$
+
+Since $(x')^2$ and $(y')^2$ are integers, $(x')^2 + (y')^2$ is the sum of two integers so it is also an integer.
+
+Since $(x')^2 + (y')^2$ is an integer and $(x')^2 + (y')^2 = \dfrac{z^2}{3}$, $\dfrac{z^2}{3}$ is also an integer.
+
+Since $\dfrac{z^2}{3}$ is an integer, $z^2$ is divisible by $3$.
+
+Since $z^2$ is the square of an integer and is divisible by $3$, $z$ must also be divisible by $3$.
+
+So $\exists z' \in \mathbb{Z}$ such that $z = 3z'$
+
+So $z^2 = 9(z')^2$
+
+So $(x')^2 + (y')^2 = \dfrac{9(z')^2}{3}$
+
+So $(x')^2 + (y')^2 = 3(z')^2$.
+
+Since $z$ is a positive integers and $z = 3z'$, $z > z'$ and $z' > 0$.
+
+Since $x', y', z' \in \mathbb{Z}$ and $x', y', z' \neq 0$ and $(x')^2 + (y')^2 = 3(z')^2$, $x', y', z'$ are valid solutions to the equation.
+
+This is a contradiction since $z > z'$, both $z$ and $z'$ are part of a solution and $z$ was defined to be the smallest possible positive value that satisfies the equation for the right hand side.
+
+Since there is a contradiction when it is assumed that the hypothesis is false, by proof by contradiction there must not exist integers $x$, $y$, and $z$ such that $x^2 + y^2 = 3z^2$ that is not $x = y = z = 0$.
+\newpage
+\section{Problem 5}
+Let $r$ be a number such that $r + \dfrac{1}{r}$ is an integer. Use induction to show that for every positive integer $n$, $r^n + \dfrac{1}{r^n}$ is an integer.\\\\
+PROOF:\\
+\subsection*{Basic Cases}
+
+$n = 0$: $r^0 + \dfrac{1}{r^0} = 1 + \dfrac{1}{1} = 1 + 1 = 2$ and $2$ is an integer.
+
+$n = 1$: It is given to us that $r^1 + \dfrac{1}{r^1} = r + \dfrac{1}{r}$ is an integer.
+
+\subsection*{Induction Hypothesis}
+$\exists kn \in \mathbb{N}$ such that $\forall k \leq n$, $r^k + \dfrac{1}{r^k}$ is an integer. 
+
+\subsection*{Inductive Step}
+Lets look at $n + 1$: so we have $r^{n+1} + \dfrac{1}{r^{n+1}}$
+
+First observe that $(r + \dfrac{1}{r}) * (r^n + \dfrac{1}{r^n}) = r^{n+1} + \dfrac{1}{r^{n-1}} + r^{n-1} + \dfrac{1}{r^{n+1}}$.
+
+So $r^{n+1} + \dfrac{1}{r^{n+1}} = (r + \dfrac{1}{r}) * (r^n + \dfrac{1}{r^n}) - (dfrac{1}{r^{n-1}} + r^{n-1})$.
+
+By the induction hypothesis we see that $(r^n + \dfrac{1}{r^n})$ is an integer
+
+We also are give that $r + \dfrac{1}{r}$ is an integer.
+
+So $(r + \dfrac{1}{r}) * (r^n + \dfrac{1}{r^n})$ is the product of two integers, so it is also an integer.
+
+Also by the induction hypothesis we get that $(dfrac{1}{r^{n-1}} + r^{n-1})$ is an integer
+
+So $(r + \dfrac{1}{r}) * (r^n + \dfrac{1}{r^n}) - (dfrac{1}{r^{n-1}} + r^{n-1})$ is the difference between two integers, so it is also an integer.
+
+Since $(r + \dfrac{1}{r}) * (r^n + \dfrac{1}{r^n}) - (dfrac{1}{r^{n-1}} + r^{n-1})$ is an integer and since $r^{n+1} + \dfrac{1}{r^{n+1}} = (r + \dfrac{1}{r}) * (r^n + \dfrac{1}{r^n}) - (dfrac{1}{r^{n-1}} + r^{n-1})$, $r^{n+1} + \dfrac{1}{r^{n+1}}$ is an integer.
+
+So by the law of strong induction, $\forall x \in \mathbb{N}$, $r^x + \dfrac{1}{r^x}$ is an integer.
+
+Since the set of positive integers is a subset of the natural numbers, $\forall n \in \mathbb{N}$ such that $n > 0$, $r^n + \dfrac{1}{r^n}$ is an integer.
+\end{document}

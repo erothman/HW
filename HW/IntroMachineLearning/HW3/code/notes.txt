@@ -1,0 +1,79 @@
+Started with optimal from part 1.6.
+Added dropout rate of 0.25 to first two conv layers, decrased accuracy making it go to 70-71.
+Removed the dropout for right now and added a 3rd layer going from 16 to 32 nodes, gives accuracy of 0.93.
+Tried with smaller learning rate, gave accurcy of 0.93.
+Both seem to not change that much after iteration 3000, so change it to 3000 instead of 6000 iterations.
+Also lets try changing batch size to 100 for both.
+5e-3 = 0.88-0.91
+1e-3 = 0.9
+
+
+
+Now I'm going to try to add drop_out to the last layer. By reasearch determined that early conv layer drop_out just lowers learning rate. So only try on third layer.
+Dropout p=0.25 accuracy = 5e-3 0.87-0.88 1e-1 0.86, p=0.5 accuaracy = 5e-3 0.81 1e-1 0.8
+
+Neither look that good, so for right now lets totally ignore dropout.
+Removed stride from third network, may not be necessary.
+5e-3 0.92 accuracy, 1e-3 0.9
+
+Raised block size to 1000 to see what happens.
+
+Added 5 layers to the table, with different things.
+5e-3 0.93-0.94, 1e-3 0.91
+
+Adding the 6th conv layer makes 5e-3 0.93, 1e-3 0.94 with some 0.93
+
+Fully implement alexnet using MaxPool2d as the pooling method.
+5e-3 0.93-0.94, 1e-3 with 5000 iterations 0.95
+
+Changed top channel number from 56 to 64.
+1e-3 1000 trainSize 0.97, 5e-3 100 trainSize 0.95, 1e-3 100 trainSize 0.95 but better both 100 trainsize have 5000 epochs.
+
+submitted with learning rate 1e-3, 1000 trainSize, 1500 epochs. Thats 2n'd submit
+
+Now changing layers again so layer 5 maps to 128 channels.
+Also I changed the final 2 layers so they are linear and not convulation.
+Converged very well but had worse test information.
+
+So I added more data by augmenting the given data, flipping it horizontally and vertically, to try to minimize the overfitting.
+
+
+So I realized I was training wrong the entire time.
+After fixing training, 1e-3 1000 bin is 0.93, 1e-3 100 bin is 0.92, 5e-3 100 bin is 0.9-0.92 with average being about 0.91
+1e-4 100 bin 0.89-0.9, 1e-4 1000 bin 
+
+Nothing going above 0.93 so lets go back to only 3 conv with final layer being conv not linear, remove dropout and pooling first 2 layers
+1e-3 goes to 0.94
+
+Removing regularization just makes everything take longer and be lower.
+Bumped it up so that 1st layer goes to 64, second goes to 128, and third goes to 256 channels.
+RESULTS: 1e-3 0.93-0.94 on only 100 bin 3000 iterations, 5e-3 worse, 1e-4 0.93-0.94
+
+Add dropout, 1e-3 0.91-0.92, 1e-4 0.89-0.9
+
+Removed the dropout line from predictions: 1e-3 0.94, 1e-4 0.92-0.93
+
+When binsize is increased to 500, 1e-3 converges around 0.935 at 1200 iterations
+1e-4 converges 0.923 to at iterations 1500
+
+Added another layer between the 2nd to third an stretch out channel growth to run faster causes rate to drop to converge around 0.93
+
+Readded the increased amount of data. Converged to around 0.92
+
+Decided to rebuild the full alexnet using maxpool for the first 2 pools. converged to 0.92 but did the worse score wise.
+
+Returned it to the simple 3 networks with small channel sizes.
+
+It didnot work.
+
+So after research found that batch normalization works better than dropout for normalization.
+That didn't work but I changed the size of hidden fields to be up to 26^2
+
+Then I added instanceNorm which is supposed to be better. NOPE
+
+
+Resimplified it based on the tutorial.
+Got it back to going to 0.935
+
+Made it 4 layers, added dropout and old data. Converged to 0.83
+

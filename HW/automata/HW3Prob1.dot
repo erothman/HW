@@ -1,0 +1,11 @@
+digraph HW3Prob1 {rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; q_2;
+node [shape = circle];
+start -> start [ label = "0" ];
+start -> q_1 [ label = "1" ];
+start -> q_2 [ label = "0" ];
+q_1 -> q_1 [ label = "1" ];
+q_1 -> q_2 [ label = "0" ];
+q_2 -> q_2 [ label = "0" ];
+}

@@ -1,0 +1,67 @@
+---
+title: "Hw 3"
+author: "Eric Rothman"
+date: "February 23, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Sample Code Given
+```{r sample}
+longest.run<-function(n)
+{
+  x<-rbinom(n,1,.5)
+  diffs<-diff(x)
+  change.positions<-seq(1:n-1)[abs(diff(x))==1]
+  change.positions<-c(0,change.positions,n)
+  x
+  max(diff(change.positions))
+}
+```
+
+## Part B
+```{r b}
+means <- 1:25
+n <- 1:25
+for (run in 1:25){
+  n[run]<-(run*10)
+  x<-rep(10*run,10000)
+  longest.runs<-sapply(x,longest.run)
+  means[run] <- mean(longest.runs)
+  print(paste("The approximated expected value for n = ", run*10 ," is ", means[run]))
+}
+```
+
+## Part C
+```{r c}
+plot(n,means)
+logEstimate = lm(means ~ -1+log(n))
+lines(n,predict(logEstimate),col='red')
+c <- summary(logEstimate)$coefficients[1]
+print(paste("The c value is ", c))
+```
+
+## Part D
+```{r d}
+est <- (c*log(500))
+x<-rep(500, 10000)
+longest.runs<-sapply(x,longest.run)
+cal <- mean(longest.runs)
+print(paste("The estimated value is", est, "while the achieved value is", cal, ". They are different by", abs(est-cal)))
+```
+
+## Part G
+```{r g}
+vars <- 1:25
+for (run in 1:25){
+  vars[run]<-(run*10)
+  x<-rep(10*run,10000)
+  longest.runs<-sapply(x,longest.run)
+  vars[run] <- var(longest.runs)
+  print(paste("The approximated variance for n = ", run*10 ," is ", vars[run]))
+}
+plot(n,vars)
+```

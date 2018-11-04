@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1521169337300.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1270590628",
+    "id" : "5B988431",
+    "lastKnownWriteTime" : 1521172777,
+    "last_content_update" : 1521172777373,
+    "path" : "~/HW/stats/HW5/HW5Part6.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "36,25",
+        "scrollLine" : "29",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,22 @@
+---
+title: "Question8Partd"
+author: "Eric Rothman"
+date: "March 9, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r part d}
+x <- rpois(1000, 4)
+
+xbar <- mean(x)
+se <- sqrt(xbar / 1000)
+low <- xbar - 1.96 * se
+high <- xbar + 1.96 * se
+print(paste("interval is p(", low, "<= lambda <= ", high, ") = 0.95"))
+```
+

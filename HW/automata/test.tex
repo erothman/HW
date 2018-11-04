@@ -1,0 +1,10 @@
+\documentclass{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[pdf]{graphviz}
+
+\begin{document}
+\digraph{ao}{rankdir=LR;
+   a [label="\detokenize{Ä}"]; % graphviz allows double quoted labels
+   o [label=<\detokenize{Ö}>]; % and html labels
+   a->o;}
+\end{document}

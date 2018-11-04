@@ -1,0 +1,11 @@
+longest.run<-function(n)
+{
+  x<-rbinom(n,1,.5)
+  diffs<-diff(x)
+  change.positions<-seq(1:n-1)[abs(diff(x))==1]
+  change.positions<-c(0,change.positions,n)
+  x
+  max(diff(change.positions))
+}
+x<-rep(100,10000)
+longest.runs<-sapply(x,longest.run)

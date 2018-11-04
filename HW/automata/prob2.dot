@@ -1,0 +1,12 @@
+digraph prob2 {
+rankdir=LR;
+size="4"
+node [shape = doublecircle]; q_odd q_even;
+node [shape = circle];
+start -> q_odd [ label = "1" ];
+start -> q_fail [ label = "0" ];
+q_odd -> q_even [ label = "0,1" ];
+q_even -> q_odd [ label = "1" ];
+q_even -> q_fail [ label = "0" ];
+q_fail -> q_fail [ label = "0,1" ];
+}

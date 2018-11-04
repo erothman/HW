@@ -1,0 +1,17 @@
+digraph prob1 {
+rankdir=LR;
+size="4"
+node [shape = doublecircle]; q_1a0 q_0a1;
+node [shape = circle];
+start -> q_1 [ label = "1" ];
+start -> q_0 [ label = "0" ];
+q_1 -> q_1a [ label = "0,1" ];
+q_0 -> q_0a [ label = "0,1" ];
+q_1a -> q_1a0 [ label = "0" ];
+q_1a -> q_fail [ label = "1" ];
+q_0a -> q_0a1 [ label = "1" ];
+q_0a -> q_fail [ label = "0" ];
+q_0a1 -> q_fail [ label = "0,1" ];
+q_1a0 -> q_fail [ label = "0,1" ];
+q_fail -> q_fail [ label = "0,1" ];
+}
