@@ -14,6 +14,10 @@ import (
 		"os"
         "strings"
 		"io/ioutil"
+<<<<<<< HEAD
+=======
+//        "strings"
+>>>>>>> 7257cb7b11a8c2b9d3b159914b81c3d9e540dc48
         "crypto/rand"
         "math/big"
 	   )
@@ -180,7 +184,11 @@ func write_secret_output(filename string, p, g, a *big.Int) {
     strBuilder.WriteString(gstring)
     strBuilder.WriteString(",")
     strBuilder.WriteString(astring)
+<<<<<<< HEAD
     strBuilder.WriteString(")")
+=======
+    strBuilder.WriteString("}")
+>>>>>>> 7257cb7b11a8c2b9d3b159914b81c3d9e540dc48
 
 //    output := "(" + pstring + "," + gstring + "," + gastring + ")"
 
