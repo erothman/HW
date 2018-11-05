@@ -78,8 +78,8 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     stringSplit := strings.Split(stringInput, ",")
 
     p, ok1 := big.NewInt(0).SetString(stringSplit[0][1:len(stringSplit[0])],10)
-    ga, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
-    g, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
+    g, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
+    ga, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
     if !ok1 || !ok2 || !ok3 {
         fmt.Println("ERROR")
     }
@@ -110,12 +110,12 @@ func encryptMessage(messageText string, k []byte) ([]byte, []byte) {
 		panic(err.Error())
 	}
 
-	IV := make([]byte, 12)
+	IV := make([]byte, 16)
 	if _, err := io.ReadFull(rand.Reader, IV); err != nil {
 		panic(err.Error())
 	}
     fmt.Println(IV)
-	aesgcm, err := cipher.NewGCM(aesCipher)
+	aesgcm, err := cipher.NewGCMWithNonceSize(aesCipher, 16)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -148,6 +148,9 @@ func main() {
     b := gen_b(p)
     gb := modular_exponentiation(g, b, p)
     gab := modular_exponentiation(ga, b, p)
+    fmt.Println(ga)
+    fmt.Println(gb)
+    fmt.Println(gab)
     k := computeK(ga, gb, gab)
     c, IV := encryptMessage(messageText, k)
     write_output(ciphertextFileName, gb, c, IV)

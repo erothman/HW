@@ -16,6 +16,8 @@ import (
 		"io/ioutil"
         "math/big"
         "crypto/sha256"
+        "crypto/aes"
+        "crypto/cipher"
         "encoding/hex"
 	   )
 
@@ -86,6 +88,41 @@ func get_inputs(filename1, filename2 string) (*big.Int, *big.Int, *big.Int, *big
     return p, a, g, gb, c
 }
 
+func decrypt_encryption(k, c []byte) {
+    IV := make([]byte, 16)
+    //IVlessC := c[16:len(c)]
+    for i:=0; i < 16; i++ {
+        IV[i] = c[i]
+    }
+    IVlessC := make([]byte, (len(c)-16))
+    for j:=0; j<len(c)-16;j++ {
+        IVlessC[j] = c[16+j]
+    }
+    aescipher, err := aes.NewCipher(k)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCMWithNonceSize(aescipher, 16)
+	if err != nil {
+		panic(err.Error())
+	}
+
+    fmt.Println(c)
+    fmt.Println(IV)
+    fmt.Println(IVlessC)
+
+	plaintext, err := aesgcm.Open(nil, IV, IVlessC, nil)
+    fmt.Println(plaintext)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Printf("%s\n", string(plaintext))
+    fmt.Println(IV)
+    fmt.Println(string(IV))
+}
+
 /*
  *This is the control function. Calls the other functions.
  */
@@ -106,6 +143,5 @@ func main() {
     gab := modular_exponentiation(gb, a, p)
     ga := modular_exponentiation(g, a, p)
     k := computeK(ga, gb, gab)
-    fmt.Println(k)
-    fmt.Println(c)
+    decrypt_encryption(k, c)
 }
