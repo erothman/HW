@@ -14,10 +14,6 @@ import (
 		"os"
         "strings"
 		"io/ioutil"
-<<<<<<< HEAD
-=======
-//        "strings"
->>>>>>> 7257cb7b11a8c2b9d3b159914b81c3d9e540dc48
         "crypto/rand"
         "math/big"
 	   )
@@ -100,7 +96,7 @@ func Miller_Rabin_check_prime(n *big.Int, k int) bool {
 
 func generate_primes() (*big.Int, *big.Int) {
     one := big.NewInt(1)
-    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(1024)), one)
+    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(30)), one)
     q, err := rand.Int(rand.Reader, upper_bound)
     if err != nil {
         fmt.Println(err)
@@ -184,11 +180,7 @@ func write_secret_output(filename string, p, g, a *big.Int) {
     strBuilder.WriteString(gstring)
     strBuilder.WriteString(",")
     strBuilder.WriteString(astring)
-<<<<<<< HEAD
     strBuilder.WriteString(")")
-=======
-    strBuilder.WriteString("}")
->>>>>>> 7257cb7b11a8c2b9d3b159914b81c3d9e540dc48
 
 //    output := "(" + pstring + "," + gstring + "," + gastring + ")"
 

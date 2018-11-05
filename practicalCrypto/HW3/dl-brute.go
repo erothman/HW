@@ -13,14 +13,9 @@ import (
 		"fmt"
 		"os"
         "strings"
-        "io"
 		"io/ioutil"
         "crypto/rand"
         "math/big"
-        "crypto/sha256"
-        "crypto/cipher"
-        "crypto/aes"
-        "encoding/hex"
 	   )
 
 func modular_exponentiation(c, d, N *big.Int) *big.Int{
@@ -47,19 +42,13 @@ func gen_b(p *big.Int) *big.Int {
     return a
 }
 
-func write_output(filename string, gb *big.Int, c, IV []byte) {
+func write_Alice_output(filename string, gb *big.Int) {
 
     gbstring := gb.String()
-
-    var str strings.Builder
-    str.WriteString(hex.EncodeToString(IV))
-    str.WriteString(hex.EncodeToString(c))
 
     var strBuilder strings.Builder
     strBuilder.WriteString("(")
     strBuilder.WriteString(gbstring)
-    strBuilder.WriteString(",")
-    strBuilder.WriteString(str.String())
     strBuilder.WriteString(")")
 
     err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
@@ -78,51 +67,25 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     stringSplit := strings.Split(stringInput, ",")
 
     p, ok1 := big.NewInt(0).SetString(stringSplit[0][1:len(stringSplit[0])],10)
-    ga, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
-    g, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
+    g, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
+    h, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
     if !ok1 || !ok2 || !ok3 {
         fmt.Println("ERROR")
     }
 
-    return p, g, ga
+    return p, g, h
 }
 
-func computeK(ga, gb, gab *big.Int) []byte {
-
-
-    var strBuilder strings.Builder
-    strBuilder.WriteString(ga.String())
-    strBuilder.WriteString(gb.String())
-    strBuilder.WriteString(gab.String())
-
-    h := sha256.New()
-    h.Write([]byte(strBuilder.String()))
-    k := h.Sum(nil)
-    fmt.Println(k)
-    return k
-}
-
-func encryptMessage(messageText string, k []byte) ([]byte, []byte) {
-    messageTextBytes := []byte(messageText)
-
-	aesCipher, err := aes.NewCipher(k)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	IV := make([]byte, 12)
-	if _, err := io.ReadFull(rand.Reader, IV); err != nil {
-		panic(err.Error())
-	}
-    fmt.Println(IV)
-	aesgcm, err := cipher.NewGCM(aesCipher)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	ciphertext := aesgcm.Seal(nil, IV, messageTextBytes, nil)
-
-	return ciphertext, IV
+func brute_force(p, g, h *big.Int) *big.Int {
+    x := big.NewInt(0)
+    for x.Cmp(p) == -1 {
+        fmt.Println(x)
+        if h.Cmp(modular_exponentiation(g, x, p)) == 0 {
+            return x
+        }
+        x = big.NewInt(0).Add(x, big.NewInt(1))
+    }
+    return big.NewInt(0)
 }
 
 /*
@@ -131,24 +94,17 @@ func encryptMessage(messageText string, k []byte) ([]byte, []byte) {
 func main() {
 
     args := os.Args[1:]
-    fmt.Println(args)
-    if (len(args) != 3) {
+    if (len(args) != 1) {
         fmt.Println("Wrong Arguments: There need to be two command line arguments.")
         fmt.Println("The first one is the key for the encryption that must consist of all uppercase letters.")
         fmt.Println("The second argument is the file name for encryption or decrpytion.")
         os.Exit(1)
     }
 
-    messageText := args[0]
-    publicKeyFileName := args[1]
-    ciphertextFileName := args[2]
+    inputFileName := args[0]
 
-    p, g, ga := get_inputs(publicKeyFileName)
+    p, g, h := get_inputs(inputFileName)
 
-    b := gen_b(p)
-    gb := modular_exponentiation(g, b, p)
-    gab := modular_exponentiation(ga, b, p)
-    k := computeK(ga, gb, gab)
-    c, IV := encryptMessage(messageText, k)
-    write_output(ciphertextFileName, gb, c, IV)
+    x := brute_force(p,g,h)
+    fmt.Println(x)
 }
