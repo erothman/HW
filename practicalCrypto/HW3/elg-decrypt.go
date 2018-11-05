@@ -14,8 +14,9 @@ import (
 		"os"
         "strings"
 		"io/ioutil"
-        "crypto/rand"
         "math/big"
+        "crypto/sha256"
+        "encoding/hex"
 	   )
 
 func modular_exponentiation(c, d, N *big.Int) *big.Int{
@@ -34,31 +35,23 @@ func modular_exponentiation(c, d, N *big.Int) *big.Int{
     return result
 }
 
-func gen_b(p *big.Int) *big.Int {
-    a, err := rand.Int(rand.Reader, big.NewInt(0).Sub(p, big.NewInt(1)))
-    if err != nil {
-        fmt.Println(err)
-    }
-    return a
-}
+func computeK(ga, gb, gab *big.Int) []byte {
 
-func write_Alice_output(filename string, gb *big.Int) {
+     var strBuilder strings.Builder
+     strBuilder.WriteString(ga.String())
+     strBuilder.WriteString(gb.String())
+     strBuilder.WriteString(gab.String())
 
-    gbstring := gb.String()
+     h := sha256.New()
+     h.Write([]byte(strBuilder.String()))
+     k := h.Sum(nil)
+     fmt.Println(k)
+     return k
+ }
 
-    var strBuilder strings.Builder
-    strBuilder.WriteString("(")
-    strBuilder.WriteString(gbstring)
-    strBuilder.WriteString(")")
 
-    err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
-    if err != nil {
-        fmt.Println(err)
-    }
-}
-
-func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
-    input, err := ioutil.ReadFile(filename)
+func get_inputs(filename1, filename2 string) (*big.Int, *big.Int, *big.Int, *big.Int, []byte) {
+    input, err := ioutil.ReadFile(filename1)
     if err != nil {
         fmt.Println(err)
     }
@@ -68,12 +61,29 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
 
     p, ok1 := big.NewInt(0).SetString(stringSplit[0][1:len(stringSplit[0])],10)
     g, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
-    ga, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
-    if !ok1 || !ok2 || !ok3 {
+    a, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
+    if !ok1 || !ok2 || !ok3{
         fmt.Println("ERROR")
     }
 
-    return p, g, ga
+    input2, err := ioutil.ReadFile(filename2)
+    if err != nil {
+        fmt.Println(err)
+    }
+
+    stringInput2 := string(input2)
+
+    stringSplit2 := strings.Split(stringInput2, ",")
+
+    gb, ok := big.NewInt(0).SetString(stringSplit2[0][1:len(stringSplit2[0])],10)
+    c, err2 := hex.DecodeString(stringSplit2[1][0:len(stringSplit2[1])-1])
+    if !ok  {
+        fmt.Println("ERROR")
+    }
+    if err2 != nil {
+        fmt.Println(err2)
+    }
+    return p, a, g, gb, c
 }
 
 /*
@@ -89,13 +99,13 @@ func main() {
         os.Exit(1)
     }
 
-    inputFileName := args[0]
-    outputFileName := args[1]
+    inputBobFileName := args[0]
+    inputSecretFileName := args[1]
 
-    p, g, ga := get_inputs(inputFileName)
-
-    b := gen_b(p)
-    gb := modular_exponentiation(g, b, p)
-    write_Alice_output(outputFileName, gb)
-    fmt.Println(modular_exponentiation(ga, b, p))
+    p, a, g, gb, c := get_inputs(inputSecretFileName, inputBobFileName)
+    gab := modular_exponentiation(gb, a, p)
+    ga := modular_exponentiation(g, a, p)
+    k := computeK(ga, gb, gab)
+    fmt.Println(k)
+    fmt.Println(c)
 }

@@ -13,10 +13,14 @@ import (
 		"fmt"
 		"os"
         "strings"
+        "io"
 		"io/ioutil"
         "crypto/rand"
         "math/big"
         "crypto/sha256"
+        "crypto/cipher"
+        "crypto/aes"
+        "encoding/hex"
 	   )
 
 func modular_exponentiation(c, d, N *big.Int) *big.Int{
@@ -43,13 +47,19 @@ func gen_b(p *big.Int) *big.Int {
     return a
 }
 
-func write_Alice_output(filename string, gb *big.Int) {
+func write_output(filename string, gb *big.Int, c, IV []byte) {
 
     gbstring := gb.String()
+
+    var str strings.Builder
+    str.WriteString(hex.EncodeToString(IV))
+    str.WriteString(hex.EncodeToString(c))
 
     var strBuilder strings.Builder
     strBuilder.WriteString("(")
     strBuilder.WriteString(gbstring)
+    strBuilder.WriteString(",")
+    strBuilder.WriteString(str.String())
     strBuilder.WriteString(")")
 
     err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
@@ -92,6 +102,29 @@ func computeK(ga, gb, gab *big.Int) []byte {
     return k
 }
 
+func encryptMessage(messageText string, k []byte) ([]byte, []byte) {
+    messageTextBytes := []byte(messageText)
+
+	aesCipher, err := aes.NewCipher(k)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	IV := make([]byte, 12)
+	if _, err := io.ReadFull(rand.Reader, IV); err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCM(aesCipher)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ciphertext := aesgcm.Seal(nil, IV, messageTextBytes, nil)
+
+	return ciphertext, IV
+}
+
 /*
  *This is the control function. Calls the other functions.
  */
@@ -106,9 +139,9 @@ func main() {
         os.Exit(1)
     }
 
-//    messageText := args[0]
+    messageText := args[0]
     publicKeyFileName := args[1]
-//    ciphertextFileName := args[2]
+    ciphertextFileName := args[2]
 
     p, g, ga := get_inputs(publicKeyFileName)
 
@@ -116,5 +149,6 @@ func main() {
     gb := modular_exponentiation(g, b, p)
     gab := modular_exponentiation(ga, b, p)
     k := computeK(ga, gb, gab)
-    
+    c, IV := encryptMessage(messageText, k)
+    write_output(ciphertextFileName, gb, c, IV)
 }

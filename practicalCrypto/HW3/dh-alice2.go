@@ -14,7 +14,6 @@ import (
 		"os"
         "strings"
 		"io/ioutil"
-        "crypto/rand"
         "math/big"
 	   )
 
@@ -34,31 +33,10 @@ func modular_exponentiation(c, d, N *big.Int) *big.Int{
     return result
 }
 
-func gen_b(p *big.Int) *big.Int {
-    a, err := rand.Int(rand.Reader, big.NewInt(0).Sub(p, big.NewInt(1)))
-    if err != nil {
-        fmt.Println(err)
-    }
-    return a
-}
 
-func write_Alice_output(filename string, gb *big.Int) {
 
-    gbstring := gb.String()
-
-    var strBuilder strings.Builder
-    strBuilder.WriteString("(")
-    strBuilder.WriteString(gbstring)
-    strBuilder.WriteString(")")
-
-    err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
-    if err != nil {
-        fmt.Println(err)
-    }
-}
-
-func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
-    input, err := ioutil.ReadFile(filename)
+func get_inputs(filename1, filename2 string) (*big.Int, *big.Int, *big.Int) {
+    input, err := ioutil.ReadFile(filename1)
     if err != nil {
         fmt.Println(err)
     }
@@ -67,13 +45,23 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     stringSplit := strings.Split(stringInput, ",")
 
     p, ok1 := big.NewInt(0).SetString(stringSplit[0][1:len(stringSplit[0])],10)
-    ga, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
-    g, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
-    if !ok1 || !ok2 || !ok3 {
+    a, ok2 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
+    if !ok1 || !ok2 {
         fmt.Println("ERROR")
     }
 
-    return p, g, ga
+    input2, err2 := ioutil.ReadFile(filename2)
+    if err != nil {
+        fmt.Println(err2)
+    }
+
+    stringInput2 := string(input2)
+
+    gb, ok := big.NewInt(0).SetString(stringInput2[1:len(stringInput2)-1],10)
+    if !ok  {
+        fmt.Println("ERROR")
+    }
+    return p, a, gb
 }
 
 /*
@@ -92,10 +80,6 @@ func main() {
     inputBobFileName := args[0]
     inputSecretFileName := args[1]
 
-    p, a, gb := get_inputs(inputBobFileName, inputSecretFileName)
-
-    b := gen_b(p)
-    gb := modular_exponentiation(g, b, p)
-    write_Alice_output(outputFileName, gb)
-    fmt.Println(modular_exponentiation(ga, b, p))
+    p, a, gb := get_inputs(inputSecretFileName, inputBobFileName)
+    fmt.Println(modular_exponentiation(gb, a, p))
 }
