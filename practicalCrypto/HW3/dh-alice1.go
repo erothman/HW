@@ -96,7 +96,7 @@ func Miller_Rabin_check_prime(n *big.Int, k int) bool {
 
 func generate_primes() (*big.Int, *big.Int) {
     one := big.NewInt(1)
-    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(30)), one)
+    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(20)), one)
     q, err := rand.Int(rand.Reader, upper_bound)
     if err != nil {
         fmt.Println(err)
@@ -110,26 +110,60 @@ func generate_primes() (*big.Int, *big.Int) {
     }
     i := int64(2)
     p := new(big.Int).Add(big.NewInt(0).Mul(q, big.NewInt(i)), one)
-    for !Miller_Rabin_check_prime(p, 4) && i < 4096 {
+    for !Miller_Rabin_check_prime(p, 4) && p.Cmp(big_exp(big.NewInt(2), big.NewInt(20))) == -1 {
         i++
         p2 := new(big.Int).Add(new(big.Int).Mul(q, big.NewInt(i)), one)
         p = p2
     }
 
-    if i > 4096 {
+    if p.Cmp(big_exp(big.NewInt(2), big.NewInt(20))) != -1 {
         return generate_primes()
     }
     return p, q
 }
 
+func prime_factor(a *big.Int) map[string]*big.Int {
+    m := make(map[string]*big.Int)
+
+    if big.NewInt(0).Mod(a, big.NewInt(2)).Cmp(big.NewInt(0)) == 0 {
+        m[big.NewInt(2).String()] = big.NewInt(2)
+        for big.NewInt(0).Mod(a, big.NewInt(2)).Cmp(big.NewInt(0)) == 0 {
+            a = big.NewInt(0).Div(a, big.NewInt(2))
+        }
+    }
+    i := big.NewInt(3)
+    for a.Cmp(big.NewInt(1)) == 1 {
+        if big.NewInt(0).Mod(a, i).Cmp(big.NewInt(0)) == 0 {
+            m[i.String()] = i
+            a = big.NewInt(0).Div(a, i)
+        } else {
+            i = big.NewInt(0).Add(i, big.NewInt(1))
+        }
+    }
+    return m
+}
+
+func test_gen(g, p, group_size *big.Int, factors map[string]*big.Int) bool{
+
+    for _, value := range factors {
+        gen := modular_exponentiation(g, big.NewInt(0).Div(group_size, value), p)
+        if gen.Cmp(big.NewInt(1)) == 0 {
+            return false
+        }
+    }
+    return true
+}
+
 func get_generator(p *big.Int, q *big.Int) *big.Int {
     group_size := new(big.Int).Sub(p, big.NewInt(1))
     j := new(big.Int).Div(group_size, q)
-    i := big.NewInt(3)
+    fmt.Println(j)
+    factors := prime_factor(j)
+    factors[q.String()] = q
+    i := big.NewInt(2)
     for group_size.Cmp(i) > 0 {
-        g := modular_exponentiation(i, j, p)
-        if g.Cmp(big.NewInt(1)) != 0 {
-            return g
+        if test_gen(i, p, group_size, factors) {
+            return i
         }
         i = new(big.Int).Add(i, big.NewInt(1))
     }
@@ -213,4 +247,5 @@ func main() {
     ga := modular_exponentiation(g, a, p)
     write_Bob_output(bobFileName, p, g, ga)
     write_secret_output(secretFileName, p, g, a)
+
 }

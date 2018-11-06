@@ -14,7 +14,6 @@ import (
 		"os"
         "strings"
 		"io/ioutil"
-        "crypto/rand"
         "math/big"
 	   )
 
@@ -34,29 +33,6 @@ func modular_exponentiation(c, d, N *big.Int) *big.Int{
     return result
 }
 
-func gen_b(p *big.Int) *big.Int {
-    a, err := rand.Int(rand.Reader, big.NewInt(0).Sub(p, big.NewInt(1)))
-    if err != nil {
-        fmt.Println(err)
-    }
-    return a
-}
-
-func write_Alice_output(filename string, gb *big.Int) {
-
-    gbstring := gb.String()
-
-    var strBuilder strings.Builder
-    strBuilder.WriteString("(")
-    strBuilder.WriteString(gbstring)
-    strBuilder.WriteString(")")
-
-    err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
-    if err != nil {
-        fmt.Println(err)
-    }
-}
-
 func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     input, err := ioutil.ReadFile(filename)
     if err != nil {
@@ -68,8 +44,7 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
 
     p, ok1 := big.NewInt(0).SetString(stringSplit[0][1:len(stringSplit[0])],10)
     g, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
-    h, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-2],10)
-    fmt.Println(h)
+    h, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
     if !ok1 || !ok2 || !ok3 {
         fmt.Println("ERROR")
     }
@@ -103,7 +78,6 @@ func pollard_rho(p, g, h *big.Int) *big.Int {
     i := big.NewInt(0)
     for big.NewInt(0).Sub(p, big.NewInt(1)).Cmp(big.NewInt(0).Mul(i, i)) == 1 {
         alphi := modular_exponentiation(g,i,p)
-        fmt.Println(alphi)
         m[alphi.String()] = i
         i = big.NewInt(0).Add(i, big.NewInt(1))
     }
