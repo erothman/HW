@@ -79,7 +79,7 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
 func brute_force(p, g, h *big.Int) *big.Int {
     x := big.NewInt(0)
     for x.Cmp(p) == -1 {
-        fmt.Println(x)
+
         if h.Cmp(modular_exponentiation(g, x, p)) == 0 {
             return x
         }

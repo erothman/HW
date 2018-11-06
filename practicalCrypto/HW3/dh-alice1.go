@@ -96,13 +96,14 @@ func Miller_Rabin_check_prime(n *big.Int, k int) bool {
 
 func generate_primes() (*big.Int, *big.Int) {
     one := big.NewInt(1)
-    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(20)), one)
-    q, err := rand.Int(rand.Reader, upper_bound)
+    upper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(1024)), one)
+    qupper_bound := big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(1020)), one)
+    q, err := rand.Int(rand.Reader, qupper_bound)
     if err != nil {
         fmt.Println(err)
     }
     for q.Cmp(big.NewInt(2048)) < 0 || !Miller_Rabin_check_prime(q, 4) {
-        q2, err := rand.Int(rand.Reader, upper_bound)
+        q2, err := rand.Int(rand.Reader, qupper_bound)
         q = q2
         if err != nil {
             fmt.Println(err)
@@ -110,13 +111,13 @@ func generate_primes() (*big.Int, *big.Int) {
     }
     i := int64(2)
     p := new(big.Int).Add(big.NewInt(0).Mul(q, big.NewInt(i)), one)
-    for !Miller_Rabin_check_prime(p, 4) && p.Cmp(big_exp(big.NewInt(2), big.NewInt(20))) == -1 {
+    for (p.Cmp(big.NewInt(0).Sub(big_exp(big.NewInt(2), big.NewInt(1023)), one)) != 1) || (!Miller_Rabin_check_prime(p, 4) && p.Cmp(upper_bound) == -1) {
         i++
         p2 := new(big.Int).Add(new(big.Int).Mul(q, big.NewInt(i)), one)
         p = p2
     }
 
-    if p.Cmp(big_exp(big.NewInt(2), big.NewInt(20))) != -1 {
+    if p.Cmp(upper_bound) != -1 {
         return generate_primes()
     }
     return p, q
@@ -157,7 +158,6 @@ func test_gen(g, p, group_size *big.Int, factors map[string]*big.Int) bool{
 func get_generator(p *big.Int, q *big.Int) *big.Int {
     group_size := new(big.Int).Sub(p, big.NewInt(1))
     j := new(big.Int).Div(group_size, q)
-    fmt.Println(j)
     factors := prime_factor(j)
     factors[q.String()] = q
     i := big.NewInt(2)

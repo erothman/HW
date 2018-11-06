@@ -47,7 +47,6 @@ func computeK(ga, gb, gab *big.Int) []byte {
      h := sha256.New()
      h.Write([]byte(strBuilder.String()))
      k := h.Sum(nil)
-     fmt.Println(k)
      return k
  }
 
@@ -65,12 +64,14 @@ func get_inputs(filename1, filename2 string) (*big.Int, *big.Int, *big.Int, *big
     g, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
     a, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
     if !ok1 || !ok2 || !ok3{
-        fmt.Println("ERROR")
+        fmt.Println("error")
+        os.Exit(0)
     }
 
     input2, err := ioutil.ReadFile(filename2)
     if err != nil {
-        fmt.Println(err)
+        fmt.Println("error")
+        os.Exit(0)
     }
 
     stringInput2 := string(input2)
@@ -80,17 +81,19 @@ func get_inputs(filename1, filename2 string) (*big.Int, *big.Int, *big.Int, *big
     gb, ok := big.NewInt(0).SetString(stringSplit2[0][1:len(stringSplit2[0])],10)
     c, err2 := hex.DecodeString(stringSplit2[1][0:len(stringSplit2[1])-1])
     if !ok  {
-        fmt.Println("ERROR")
+        fmt.Println("error")
+        os.Exit(0)
     }
     if err2 != nil {
-        fmt.Println(err2)
+        fmt.Println("error")
+        os.Exit(0)
     }
     return p, a, g, gb, c
 }
 
 func decrypt_encryption(k, c []byte) {
     IV := make([]byte, 16)
-    //IVlessC := c[16:len(c)]
+
     for i:=0; i < 16; i++ {
         IV[i] = c[i]
     }
@@ -100,27 +103,24 @@ func decrypt_encryption(k, c []byte) {
     }
     aescipher, err := aes.NewCipher(k)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("error")
+        os.Exit(0)
 	}
 
 	aesgcm, err := cipher.NewGCMWithNonceSize(aescipher, 16)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("error")
+        os.Exit(0)
 	}
 
-    fmt.Println(c)
-    fmt.Println(IV)
-    fmt.Println(IVlessC)
-
 	plaintext, err := aesgcm.Open(nil, IV, IVlessC, nil)
-    fmt.Println(plaintext)
+
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("error")
+        os.Exit(0)
 	}
 
 	fmt.Printf("%s\n", string(plaintext))
-    fmt.Println(IV)
-    fmt.Println(string(IV))
 }
 
 /*

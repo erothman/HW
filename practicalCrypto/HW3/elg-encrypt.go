@@ -64,14 +64,16 @@ func write_output(filename string, gb *big.Int, c, IV []byte) {
 
     err := ioutil.WriteFile(filename, []byte(strBuilder.String()), 0644)
     if err != nil {
-        fmt.Println(err)
+        fmt.Println("err")
+        os.Exit(0)
     }
 }
 
 func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     input, err := ioutil.ReadFile(filename)
     if err != nil {
-        fmt.Println(err)
+        fmt.Println("error")
+        os.Exit(0)
     }
     stringInput := string(input)
 
@@ -81,7 +83,8 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     g, ok2 := big.NewInt(0).SetString(stringSplit[1][0:len(stringSplit[1])],10)
     ga, ok3 := big.NewInt(0).SetString(stringSplit[2][0:len(stringSplit[2])-1],10)
     if !ok1 || !ok2 || !ok3 {
-        fmt.Println("ERROR")
+        fmt.Println("Error")
+        os.Exit(0)
     }
 
     return p, g, ga
@@ -98,7 +101,6 @@ func computeK(ga, gb, gab *big.Int) []byte {
     h := sha256.New()
     h.Write([]byte(strBuilder.String()))
     k := h.Sum(nil)
-    fmt.Println(k)
     return k
 }
 
@@ -114,7 +116,7 @@ func encryptMessage(messageText string, k []byte) ([]byte, []byte) {
 	if _, err := io.ReadFull(rand.Reader, IV); err != nil {
 		panic(err.Error())
 	}
-    fmt.Println(IV)
+
 	aesgcm, err := cipher.NewGCMWithNonceSize(aesCipher, 16)
 	if err != nil {
 		panic(err.Error())
@@ -131,7 +133,6 @@ func encryptMessage(messageText string, k []byte) ([]byte, []byte) {
 func main() {
 
     args := os.Args[1:]
-    fmt.Println(args)
     if (len(args) != 3) {
         fmt.Println("Wrong Arguments: There need to be two command line arguments.")
         fmt.Println("The first one is the key for the encryption that must consist of all uppercase letters.")
@@ -148,9 +149,6 @@ func main() {
     b := gen_b(p)
     gb := modular_exponentiation(g, b, p)
     gab := modular_exponentiation(ga, b, p)
-    fmt.Println(ga)
-    fmt.Println(gb)
-    fmt.Println(gab)
     k := computeK(ga, gb, gab)
     c, IV := encryptMessage(messageText, k)
     write_output(ciphertextFileName, gb, c, IV)
