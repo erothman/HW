@@ -77,90 +77,50 @@ func get_inputs(filename string) (*big.Int, *big.Int, *big.Int) {
     return p, g, h
 }
 
-func x_con(x, alph, beta, p *big.Int) *big.Int {
-    if big.NewInt(1).Cmp(big.NewInt(0).Mod(x, big.NewInt(3))) == 0 {
-        return big.NewInt(0).Mod(big.NewInt(0).Mul(beta, x), p)
-    } else if big.NewInt(0).Cmp(big.NewInt(0).Mod(x, big.NewInt(3))) == 0 {
-        return big.NewInt(0).Mod(big.NewInt(0).Mul(x,x), p)
-    } else {
-        return big.NewInt(0).Mod(big.NewInt(0).Mul(alph, x), p)
+func extend_euclid_alg(a, n *big.Int) *big.Int {
+    t := big.NewInt(0)
+    newt := big.NewInt(1)
+    r := n
+    newr := a
+    for newr.Cmp(big.NewInt(0)) != 0 {
+        quotient := big.NewInt(0).Div(r, newr)
+        rh := newr
+        th := newt
+        newr = big.NewInt(0).Sub(r, big.NewInt(0).Mul(quotient, newr))
+        newt = big.NewInt(0).Sub(t, big.NewInt(0).Mul(quotient, newt))
+        r = rh
+        t = th
     }
-}
+    return t
 
-func a_con(a, x, p *big.Int) *big.Int {
-    if big.NewInt(1).Cmp(big.NewInt(0).Mod(x, big.NewInt(3))) == 0 {
-        return a
-    } else if big.NewInt(0).Cmp(big.NewInt(0).Mod(x, big.NewInt(3)))== 0 {
-        return big.NewInt(0).Mod(big.NewInt(0).Mul(a, big.NewInt(2)), big.NewInt(0).Sub(p, big.NewInt(1)))
-    } else {
-        return big.NewInt(0).Mod(big.NewInt(0).Add(a, big.NewInt(1)), big.NewInt(0).Sub(p, big.NewInt(1)))
-    }
-}
-
-func b_con(b, x, p *big.Int) *big.Int {
-    if big.NewInt(1).Cmp(big.NewInt(0).Mod(x, big.NewInt(3))) == 0 {
-        return big.NewInt(0).Mod(big.NewInt(0).Add(b, big.NewInt(1)), big.NewInt(0).Sub(p, big.NewInt(1)))
-    } else if big.NewInt(0).Cmp(big.NewInt(0).Mod(x, big.NewInt(3)))== 0 {
-        return big.NewInt(0).Mod(big.NewInt(0).Mul(b, big.NewInt(2)), big.NewInt(0).Sub(p, big.NewInt(1)))
-    } else {
-        return b
-    }
 }
 
 func pollard_rho(p, g, h *big.Int) *big.Int {
-    fmt.Println(p)
-    fmt.Println(g)
-    fmt.Println(h)
-    var m1 map[string]*big.Int
-    var m2 map[string]*big.Int
-    var m3 map[string]*big.Int
-    m1 = make(map[string]*big.Int)
-    m2 = make(map[string]*big.Int)
-    m3 = make(map[string]*big.Int)
-    fmt.Println(m1)
-    m1[big.NewInt(0).String()] = big.NewInt(1)
-    m2[big.NewInt(0).String()] = big.NewInt(0)
-    m3[big.NewInt(0).String()] = big.NewInt(0)
-    fmt.Println(m1)
-    fmt.Println(m1[big.NewInt(0).String()])
-    i := big.NewInt(1)
-    i2 := big.NewInt(2)
-    m1[big.NewInt(1).String()] = x_con(m1[big.NewInt(0).String()], g, h, p)
-    m2[big.NewInt(1).String()] = a_con(m2[big.NewInt(0).String()], m1[big.NewInt(0).String()], p)
-    m3[big.NewInt(1).String()] = b_con(m3[big.NewInt(0).String()], m1[big.NewInt(0).String()], p)
-    m1[big.NewInt(2).String()] = x_con(m1[big.NewInt(1).String()], g, h, p)
-    m2[big.NewInt(2).String()] = a_con(m2[big.NewInt(1).String()], m1[big.NewInt(1).String()], p)
-    m3[big.NewInt(2).String()] = b_con(m3[big.NewInt(1).String()], m1[big.NewInt(1).String()], p)
-    fmt.Println(m1)
-    for m1[i.String()].Cmp(m1[i2.String()]) != 0 {
-        m1[big.NewInt(0).Add(i2, big.NewInt(1)).String()] = x_con(m1[i2.String()], g, h, p)
-        m2[big.NewInt(0).Add(i2, big.NewInt(1)).String()] = a_con(m2[i2.String()], m1[i2.String()], p)
-        m3[big.NewInt(0).Add(i2, big.NewInt(1)).String()] = b_con(m3[i2.String()], m1[i2.String()], p)
-        i2 = big.NewInt(0).Add(i2, big.NewInt(1))
-        m1[big.NewInt(0).Add(i2, big.NewInt(1)).String()] = x_con(m1[i2.String()], g, h, p)
-        m2[big.NewInt(0).Add(i2, big.NewInt(1)).String()] = a_con(m2[i2.String()], m1[i2.String()], p)
-        m3[big.NewInt(0).Add(i2, big.NewInt(1)).String()] = b_con(m3[i2.String()], m1[i2.String()], p)
-        i2 = big.NewInt(0).Add(i2, big.NewInt(1))
+    var m map[string]*big.Int
+
+    m = make(map[string]*big.Int)
+
+    i := big.NewInt(0)
+    for big.NewInt(0).Sub(p, big.NewInt(1)).Cmp(big.NewInt(0).Mul(i, i)) == 1 {
+        alphi := modular_exponentiation(g,i,p)
+        fmt.Println(alphi)
+        m[alphi.String()] = i
         i = big.NewInt(0).Add(i, big.NewInt(1))
     }
-    r := big.NewInt(0).Mod(big.NewInt(0).Sub(m3[i.String()], m3[i2.String()]), big.NewInt(0).Sub(p, big.NewInt(1)))
-    fmt.Println(big.NewInt(0).Sub(p, big.NewInt(1)))
-    x := big.NewInt(0).Mod(big.NewInt(0).Div(big.NewInt(0).Sub(m2[i2.String()], m2[i.String()]), r), big.NewInt(0).Sub(p, big.NewInt(1)))
-    fmt.Println(m1["51"])
-    fmt.Println(m2["51"])
-    fmt.Println(m3["51"])
-    fmt.Println(m1["102"])
-    fmt.Println(m2["102"])
-    fmt.Println(m3["102"])
-    fmt.Println()
-    fmt.Println(i)
-    fmt.Println(m2[i.String()])
-    fmt.Println(m2[i2.String()])
-    fmt.Println(m3[i.String()])
-    fmt.Println(m3[i2.String()])
-    fmt.Println(big.NewInt(0).Sub(m2[i2.String()], m2[i.String()]))
-    fmt.Println(r)
-    fmt.Println(x)
+    alphm := modular_exponentiation(g,i,p)
+    alphminv := big.NewInt(0).Mod(extend_euclid_alg(alphm, p), p)
+    gamma := h
+
+    j := big.NewInt(0)
+    for j.Cmp(i) == -1 {
+        if m[gamma.String()] != nil {
+            return big.NewInt(0).Add(big.NewInt(0).Mul(j, i), m[gamma.String()])
+        }
+        gamma = big.NewInt(0).Mod(big.NewInt(0).Mul(gamma, alphminv) , p)
+        j = big.NewInt(0).Add(j, big.NewInt(1))
+    }
+
+
     return big.NewInt(0)
 }
 
